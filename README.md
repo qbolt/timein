@@ -1,6 +1,6 @@
 # timein
 
-> A command-line application for getting the time in a given location.
+> A command-line application for getting the time in a given location, or the difference in time between two locations.
 
 ## Install
 
@@ -14,6 +14,7 @@ $ npm install -g timein
       $ timein <input>
 
   Options
-      -p, --proxy             Set your proxy
-      -h, --help              Display helpful information
+      -d <"2nd loc">, --difference  (Requires quotes) Get the time difference between two locations    
+      -p <proxy>, --proxy           Set your proxy
+      -h, --help                    Display helpful information
 ```
