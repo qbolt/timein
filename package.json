@@ -2,9 +2,9 @@
   "name": "timein",
   "version": "1.0.0",
   "description": "A command-line application for getting the time in a given location.",
-  "main": "index.js",
+  "main": "src/timein.js",
   "bin": {
-    "timein": "index.js"
+    "timein": "src/timein.js"
   },
   "engines": {
     "node": ">=4"
