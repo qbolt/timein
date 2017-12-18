@@ -41,6 +41,8 @@
   },
   "dependencies": {
     "meow": "^3.7.0",
+    "moment": "^2.20.0",
+    "moment-timezone": "^0.5.14",
     "request": "^2.81.0"
   }
 }

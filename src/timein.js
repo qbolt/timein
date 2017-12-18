@@ -59,23 +59,115 @@ const cli = meow(`
         -d, --difference <"2nd loc">    (Requires quotes) Get the time difference between two locations
         -p, --proxy                     Set your proxy
         -h, --help                      Display helpful information
+        -r, --remote                    Forces a remote search (don't use the local tz database)
 `, {
     alias: {
         d: '--difference',
         p: '--proxy',
-        h: '--help'
+        h: '--help',
+        r: "--remote"
     }
 })
 
-const url = createUrl('http://www.google.com/search?q=time+', cli)
-const options = Object.assign(
-    {
-        url,
-        headers: {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'
-        }
-    },
-    cli.flags.p && { proxy: cli.flags.p }
-)
+const remoteLookup = (cli) => {
+    const url = createUrl('http://www.google.com/search?q=time+', cli)
+    const options = Object.assign(
+        {
+            url,
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'
+            }
+        },
+        cli.flags.p && { proxy: cli.flags.p }
+    )
 
-makeRequest(options, cli.flags)
+    makeRequest(options, cli.flags)
+}
+
+const moment = require("moment-timezone")
+
+const showTimeForZone = (zone) => {
+    var date = moment().tz(zone)
+    formatAndDisplayDate(date, zone)
+    return true
+}
+
+const formatAndDisplayDate = (date, zone) => {
+    var time = date.format("LT dddd, LL Z")
+    var location = zone.split("/").reverse().join(", ")
+    console.log(`${location} \n${time}`)
+    return true;
+}
+
+const localLookup = (cli) => {
+    var {input, flags} = cli
+
+    // Local Lookup doesn't support options
+    if(Object.keys(flags).length !== 0) {
+        return false;
+    }
+
+    const tz = moment.tz;
+
+    var found = {};
+    
+    // Try to build a timezone name
+    for(var name in tz._names) {
+        var zone = tz._names[name];
+        
+        var zone_components = zone.toLowerCase().split("/")
+        var name_components = name.toLowerCase().split("_")
+
+        var combined_components = zone_components.concat(name_components);
+
+        var matches = 0.0;
+
+        for(var i in input) {
+            var key = input[i].toLowerCase();
+
+            if(combined_components.indexOf(key) !== -1) {
+                matches += 1.0;
+            }
+
+            for(var i in combined_components) {
+                var component = combined_components[i];
+                if(component.indexOf(key) !== -1) {
+                    matches += (parseFloat(key.length) / parseFloat(component.length))
+                    break;
+                }
+
+            }
+        }
+
+        if(matches !== 0.0) {
+            found[zone] = matches;
+        }
+    }
+
+    if(Object.keys(found).length === 0) {
+        return false;
+    }
+
+    var topZone = false;
+    var topZoneScore = 0;
+
+    for(var zone in found) {
+        var score = found[zone];
+        if(score > topZoneScore && score > 1.0) {
+            topZone = zone;
+            topZoneScore = score;
+        }
+    }    
+
+    if(topZone === false) {
+        return false;
+    }
+
+    return showTimeForZone(topZone);
+}
+
+var result = localLookup(cli);
+
+if(!result) {
+    remoteLookup(cli);
+}
