@@ -130,7 +130,12 @@ const run = () => {
   const difference = cli.flags.d
   const proxy = cli.flags.p
 
-  loopup(location, difference, proxy).then(console.log)
+  loopup(location, difference, proxy)
+    .then(console.log)
+    .catch(() => {
+      console.log('Could not find time for given location')
+      cli.showHelp()
+    })
 }
 
 run()
