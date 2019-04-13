@@ -1,6 +1,6 @@
 # timein
 
-> A command-line application for getting the time in a given location, or the difference in time between two locations or timezones.
+> A command-line application for getting the time in a given location or timezone, or the difference in time between two locations or timezones.
 
 ## Install
 

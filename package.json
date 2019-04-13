@@ -1,6 +1,6 @@
 {
   "name": "timein",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A command-line application for getting the time in a given location.",
   "main": "index.js",
   "bin": {
